@@ -50,8 +50,8 @@ container_name: frontend-container
 volumes:
   # list the names of the two volumes you created to hold the node_modules
   #     - Hint: the format looks like: {volume name}:
-   backend_node_modules:
-  frontend_node_modules:
+ -  backend_node_modules:
+ - frontend_node_modules:
 
 networks:
   app-network:
