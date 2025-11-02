@@ -1,57 +1,36 @@
 services:
-  # Backend Service
   backend:
-    # Connect your build to the FOLDER location of your backend Dockerfile
- build: ./backend                    # Connects to the backend Dockerfile folder
+    build: ./backend
     container_name: backend-container
-    
-    # Connect an open localhost port to your exposed frontend port
- ports:
-      - "5000:5000" 
-    # Connect two volumes for backend
-    # The first one maps your local backend to the working directory
-    #     - Hint: {relative backend location}:{working directory listed in your Dockerfile}
-    # Second volume needed, is creating a volume to save the node_module folder created
-    #     - Hint: {volume name}:{working directory}/node_modules
-    #     - Hint: You can name your volume anything, it will auto create when building
-  - ./backend:/app                  # map local backend folder to container working directory
-      - backend_node_modules:/app/node_modules   # named volume for node_modules
-    # Leave this, this helps node.js know that there is something running in production
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     environment:
       - NODE_ENV=production
-      
-    # Connect your backend to the network name created below
-- app-network
-  # Frontend Service
+    networks:
+      - app-network
+
   frontend:
-    # Connect your build to the FOLDER location of your frontend Dockerfile
-build: ./frontend  
-container_name: frontend-container
-    # Connect an open localhost port to your exposed frontend port
-  ports:
-      - "3000:3000" 
-    # Connect two volumes for frontend
-    # The first one maps your local frontend to the working directory
-    #     - Hint: {relative frontend location}:{working directory listed in your Dockerfile}
-    # Second volume needed, is creating a volume to save the node_module folder created
-    #     - Hint: {volume name}:{working directory}/node_modules
-    #     - Hint: You can name your volume anything, it will auto create when building
-      - ./frontend:/app                 # map local frontend folder to container working directory
+    build: ./frontend
+    container_name: frontend-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
       - frontend_node_modules:/app/node_modules
-    # Leave this, this helps node.js know that there is something running in production
     environment:
       - NODE_ENV=development
       - NODE_OPTIONS=--openssl-legacy-provider
-    # This makes sure the front end looks for the backend
     depends_on:
       - backend
-    # Connect your frontend to the network name created below
+    networks:
+      - app-network
 
 volumes:
-  # list the names of the two volumes you created to hold the node_modules
-  #     - Hint: the format looks like: {volume name}:
- -  backend_node_modules:
- - frontend_node_modules:
+  backend_node_modules:
+  frontend_node_modules:
 
 networks:
   app-network:
